@@ -1,0 +1,1754 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click and Go</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+        font-family: Arial, sans-serif;
+        background: #202124;
+        color: white;
+    }
+
+    body {
+        min-height: 100vh;
+    }
+
+    button,
+    select,
+    input {
+        font-family: inherit;
+    }
+
+    /* =========================
+       MENU
+    ========================= */
+
+    #menu {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+        background: #202124;
+    }
+
+    .conteneur-menu {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+    }
+
+    .menu-principal {
+        flex: 1;
+        max-width: 700px;
+        margin: auto;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 48px;
+        margin: 0 0 40px 0;
+    }
+
+    .parametre {
+        margin: 30px 0;
+    }
+
+    .parametre label {
+        display: block;
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    select {
+        background: #303134;
+        color: white;
+        border: 1px solid #666;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .tailles {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .taille-selectionnee {
+        font-size: 26px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .bouton-start {
+        margin-top: 30px;
+        padding: 15px 45px;
+        font-size: 24px;
+        border: none;
+        border-radius: 10px;
+        background: #3c4043;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .bouton-start:hover {
+        background: #5f6368;
+    }
+
+    /* =========================
+       RECORDS
+    ========================= */
+
+    #records {
+        margin-top: 45px;
+    }
+
+    #records h2 {
+        margin-bottom: 20px;
+    }
+
+    .record-ligne {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        margin: 5px 0;
+        background: #292a2d;
+        border-radius: 5px;
+    }
+
+    .record-info {
+        text-align: left;
+    }
+
+    .record-score {
+        font-weight: bold;
+    }
+
+    /* =========================
+       LEGENDE
+    ========================= */
+
+    .legende {
+        width: 310px;
+        flex-shrink: 0;
+        background: #292a2d;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .legende h2 {
+        font-size: 22px;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .legende-explication {
+        color: #aaa;
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 18px;
+    }
+
+    .legende-ligne {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 9px 0;
+        font-size: 14px;
+    }
+
+    .couleur-legende {
+        width: 32px;
+        height: 25px;
+        border-radius: 5px;
+        flex-shrink: 0;
+    }
+
+    /* =========================
+       NIVEAUX
+    ========================= */
+
+    .niveau-1 {
+        color: #ffb3b3;
+    }
+
+    .niveau-2 {
+        color: #ff9999;
+    }
+
+    .niveau-3 {
+        color: #ff6666;
+    }
+
+    .niveau-4 {
+        color: #ff3333;
+    }
+
+    .niveau-5 {
+        color: #e60000;
+    }
+
+    .niveau-6 {
+        color: #8b0000;
+    }
+
+    .niveau-7 {
+        color: #650000;
+        background: #f2f2f2;
+        padding: 2px 7px;
+        border-radius: 5px;
+    }
+
+    .fond-niveau-1 {
+        background: #ffb3b3;
+    }
+
+    .fond-niveau-2 {
+        background: #ff9999;
+    }
+
+    .fond-niveau-3 {
+        background: #ff6666;
+    }
+
+    .fond-niveau-4 {
+        background: #ff3333;
+    }
+
+    .fond-niveau-5 {
+        background: #e60000;
+    }
+
+    .fond-niveau-6 {
+        background: #8b0000;
+    }
+
+    .fond-niveau-7 {
+        background: #650000;
+        border: 1px solid #aaa;
+    }
+
+    /* =========================
+       JEU
+    ========================= */
+
+    #jeu {
+        display: none;
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background: #202124;
+    }
+
+    /*
+        Le fond est aussi placé directement
+        sur la zone qui passe en plein écran.
+    */
+
+    #zone-jeu {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        cursor: crosshair;
+        overflow: hidden;
+        background: #202124;
+    }
+
+    /*
+        Correction importante :
+        quand #zone-jeu devient lui-même
+        l'élément plein écran, il conserve
+        explicitement le fond.
+    */
+
+    #zone-jeu:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        background: #202124;
+    }
+
+    /*
+        Sécurité supplémentaire pour
+        les navigateurs utilisant la syntaxe
+        avec préfixe WebKit.
+    */
+
+    #zone-jeu:-webkit-full-screen {
+        width: 100vw;
+        height: 100vh;
+        background: #202124;
+    }
+
+    #hud {
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 30px;
+        z-index: 10;
+        background: rgba(32, 33, 36, 0.85);
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 22px;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+
+    #point {
+        position: absolute;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        z-index: 5;
+    }
+
+    /* =========================
+       FIN
+    ========================= */
+
+    #fin {
+        position: absolute;
+        inset: 0;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background: rgba(32, 33, 36, 0.95);
+        z-index: 20;
+    }
+
+    .fin-contenu {
+        text-align: center;
+        background: #292a2d;
+        border-radius: 15px;
+        padding: 35px 50px;
+        min-width: 350px;
+    }
+
+    .fin-contenu h2 {
+        font-size: 38px;
+        margin-top: 0;
+    }
+
+    .resultat {
+        font-size: 22px;
+        margin: 12px 0;
+    }
+
+    .resultat-score {
+        font-size: 40px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .performance-info {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+
+    .bouton-menu {
+        margin-top: 25px;
+        padding: 12px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        background: #3c4043;
+        color: white;
+        cursor: pointer;
+    }
+
+    .bouton-menu:hover {
+        background: #5f6368;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 1000px) {
+
+        .conteneur-menu {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .legende {
+            width: 100%;
+            max-width: 700px;
+        }
+    }
+
+    /*
+        Petit écran : évite que le HUD
+        déborde horizontalement.
+    */
+
+    @media (max-width: 600px) {
+
+        #hud {
+            gap: 10px;
+            padding: 8px 12px;
+            font-size: 15px;
+        }
+
+        .fin-contenu {
+            min-width: 0;
+            width: calc(100% - 30px);
+            padding: 30px 20px;
+        }
+
+        .fin-contenu h2 {
+            font-size: 30px;
+        }
+
+        .resultat-score {
+            font-size: 34px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     MENU
+========================= -->
+
+<section id="menu">
+
+    <div class="conteneur-menu">
+
+        <div class="menu-principal">
+
+            <h1>Click and Go</h1>
+
+            <div class="parametre">
+
+                <label for="duree">
+                    Durée
+                </label>
+
+                <select id="duree">
+
+                    <option value="5">
+                        5 secondes
+                    </option>
+
+                    <option value="10">
+                        10 secondes
+                    </option>
+
+                    <option value="30">
+                        30 secondes
+                    </option>
+
+                    <option value="60">
+                        1 minute
+                    </option>
+
+                    <option value="120">
+                        2 minutes
+                    </option>
+
+                    <option value="300">
+                        5 minutes
+                    </option>
+
+                    <option value="600">
+                        10 minutes
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="parametre">
+
+                <label for="taille">
+                    Taille du point
+                </label>
+
+                <input
+                    type="range"
+                    id="taille"
+                    min="0"
+                    max="5"
+                    step="1"
+                    value="5"
+                >
+
+                <div class="tailles">
+
+                    <span>5%</span>
+                    <span>10%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+
+                </div>
+
+                <div
+                    id="taille-selectionnee"
+                    class="taille-selectionnee"
+                >
+                    100%
+                </div>
+
+            </div>
+
+
+            <button
+                class="bouton-start"
+                id="bouton-start"
+            >
+                Commencer
+            </button>
+
+
+            <div id="records">
+
+                <h2>
+                    🏆 Records personnels
+                </h2>
+
+                <div id="liste-records"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             LEGENDE
+        ========================= -->
+
+        <div class="legende">
+
+            <h2>
+                🎯 Difficulté de performance
+            </h2>
+
+            <div class="legende-explication">
+
+                La difficulté tient compte du
+                <strong>ratio</strong>
+                et de la
+                <strong>taille du point</strong>.
+                Un petit point rend un même nombre
+                de clics/s beaucoup plus difficile
+                à atteindre.
+
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-1"
+                ></span>
+
+                <span>
+                    0 à &lt; 1 — Très faible
+                </span>
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-2"
+                ></span>
+
+                <span>
+                    1 à &lt; 2 — Faible
+                </span>
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-3"
+                ></span>
+
+                <span>
+                    2 à &lt; 3 — Correct
+                </span>
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-4"
+                ></span>
+
+                <span>
+                    3 à &lt; 4 — Bon
+                </span>
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-5"
+                ></span>
+
+                <span>
+                    4 à &lt; 5 — Très bon
+                </span>
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-6"
+                ></span>
+
+                <span>
+                    5 à &lt; 6 — Excellent
+                </span>
+            </div>
+
+
+            <div class="legende-ligne">
+                <span
+                    class="couleur-legende fond-niveau-7"
+                ></span>
+
+                <span>
+                    6+ — Performance extrême
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     JEU
+========================= -->
+
+<section id="jeu">
+
+    <div id="zone-jeu">
+
+        <div id="hud">
+
+            <div>
+                Temps :
+                <span id="timer">
+                    0.0
+                </span>s
+            </div>
+
+            <div>
+                Score :
+                <span id="score">
+                    0
+                </span>
+            </div>
+
+            <div>
+                Ratio :
+                <span
+                    id="ratio"
+                    class="niveau-1"
+                >
+                    0.00
+                </span>
+                clics/s
+            </div>
+
+        </div>
+
+
+        <div id="point"></div>
+
+    </div>
+
+
+    <!-- =========================
+         ECRAN DE FIN
+    ========================= -->
+
+    <div id="fin">
+
+        <div class="fin-contenu">
+
+            <h2>
+                Partie terminée !
+            </h2>
+
+
+            <div class="resultat-score">
+
+                <span id="score-final">
+                    0
+                </span>
+
+                clics
+
+            </div>
+
+
+            <div class="resultat">
+
+                Ratio :
+
+                <span
+                    id="ratio-final"
+                    class="niveau-1"
+                >
+                    0.00
+                </span>
+
+                clics/s
+
+            </div>
+
+
+            <div class="resultat">
+
+                Durée :
+
+                <span id="duree-final">
+                    0
+                </span>
+
+            </div>
+
+
+            <div class="resultat">
+
+                Taille du point :
+
+                <span id="taille-final">
+                    100%
+                </span>
+
+            </div>
+
+
+            <div class="performance-info">
+
+                Performance :
+
+                <strong id="niveau-final">
+                    Très faible
+                </strong>
+
+            </div>
+
+
+            <button
+                class="bouton-menu"
+                id="bouton-menu"
+            >
+                Retour au menu
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<script>
+
+"use strict";
+
+
+/* ==========================================================
+   CONFIGURATION
+========================================================== */
+
+const POURCENTAGES_TAILLE = [
+    5,
+    10,
+    25,
+    50,
+    75,
+    100
+];
+
+const DUREES = [
+    5,
+    10,
+    30,
+    60,
+    120,
+    300,
+    600
+];
+
+const NOMS_DUREES = {
+    5: "5 secondes",
+    10: "10 secondes",
+    30: "30 secondes",
+    60: "1 minute",
+    120: "2 minutes",
+    300: "5 minutes",
+    600: "10 minutes"
+};
+
+const NOMS_NIVEAUX = {
+    1: "Très faible",
+    2: "Faible",
+    3: "Correct",
+    4: "Bon",
+    5: "Très bon",
+    6: "Excellent",
+    7: "Performance extrême"
+};
+
+const DIAMETRE_BASE = 60;
+
+
+/* ==========================================================
+   ETAT
+========================================================== */
+
+let dureeActuelle = 5;
+
+let pourcentageActuel = 100;
+
+let diametreActuel = 180;
+
+let score = 0;
+
+let tempsDepart = 0;
+
+let partieEnCours = false;
+
+let animationTimer = null;
+
+
+/* ==========================================================
+   RECORDS
+========================================================== */
+
+const records = {};
+
+
+function initialiserRecords() {
+
+    for (const duree of DUREES) {
+
+        records[duree] = {};
+
+        for (
+            const taille
+            of POURCENTAGES_TAILLE
+        ) {
+
+            records[duree][taille] = {
+                score: 0,
+                ratio: 0
+            };
+        }
+    }
+}
+
+
+/* ==========================================================
+   DOM
+========================================================== */
+
+const menu =
+    document.getElementById("menu");
+
+const jeu =
+    document.getElementById("jeu");
+
+const zoneJeu =
+    document.getElementById("zone-jeu");
+
+const point =
+    document.getElementById("point");
+
+const finElement =
+    document.getElementById("fin");
+
+const dureeSelect =
+    document.getElementById("duree");
+
+const tailleSlider =
+    document.getElementById("taille");
+
+const tailleSelectionnee =
+    document.getElementById(
+        "taille-selectionnee"
+    );
+
+const timerElement =
+    document.getElementById("timer");
+
+const scoreElement =
+    document.getElementById("score");
+
+const ratioElement =
+    document.getElementById("ratio");
+
+const scoreFinalElement =
+    document.getElementById("score-final");
+
+const ratioFinalElement =
+    document.getElementById("ratio-final");
+
+const dureeFinalElement =
+    document.getElementById("duree-final");
+
+const tailleFinalElement =
+    document.getElementById("taille-final");
+
+const niveauFinalElement =
+    document.getElementById("niveau-final");
+
+const listeRecords =
+    document.getElementById("liste-records");
+
+const boutonStart =
+    document.getElementById("bouton-start");
+
+const boutonMenu =
+    document.getElementById("bouton-menu");
+
+
+/* ==========================================================
+   OUTILS
+========================================================== */
+
+function obtenirPourcentageTaille() {
+
+    const index =
+        Number(tailleSlider.value);
+
+    return POURCENTAGES_TAILLE[index];
+}
+
+
+function calculerDiametre(pourcentage) {
+
+    return Math.max(
+        12,
+        Math.floor(
+            DIAMETRE_BASE *
+            pourcentage *
+            3 /
+            100
+        )
+    );
+}
+
+
+function obtenirTempsEcoule() {
+
+    if (!tempsDepart) {
+        return 0;
+    }
+
+    return Math.max(
+        0,
+        (performance.now() - tempsDepart) / 1000
+    );
+}
+
+
+function obtenirRatio() {
+
+    const temps =
+        obtenirTempsEcoule();
+
+    if (temps <= 0) {
+        return 0;
+    }
+
+    return score / temps;
+}
+
+
+/* ==========================================================
+   TAILLE
+========================================================== */
+
+function mettreAJourTaille() {
+
+    pourcentageActuel =
+        obtenirPourcentageTaille();
+
+    diametreActuel =
+        calculerDiametre(
+            pourcentageActuel
+        );
+
+    tailleSelectionnee.textContent =
+        pourcentageActuel + "%";
+}
+
+
+/* ==========================================================
+   DIFFICULTE
+========================================================== */
+
+function obtenirCoefficientDifficulte(
+    pourcentage
+) {
+
+    return Math.sqrt(
+        100 / pourcentage
+    );
+}
+
+
+function calculerPerformanceAjustee(
+    ratio,
+    pourcentage
+) {
+
+    return ratio *
+        obtenirCoefficientDifficulte(
+            pourcentage
+        );
+}
+
+
+function obtenirNiveauPerformance(
+    performance
+) {
+
+    if (performance < 1) {
+        return 1;
+    }
+
+    if (performance < 2) {
+        return 2;
+    }
+
+    if (performance < 3) {
+        return 3;
+    }
+
+    if (performance < 4) {
+        return 4;
+    }
+
+    if (performance < 5) {
+        return 5;
+    }
+
+    if (performance < 6) {
+        return 6;
+    }
+
+    return 7;
+}
+
+
+function appliquerCouleur(
+    element,
+    ratio,
+    pourcentage
+) {
+
+    for (let i = 1; i <= 7; i++) {
+
+        element.classList.remove(
+            "niveau-" + i
+        );
+    }
+
+    const performance =
+        calculerPerformanceAjustee(
+            ratio,
+            pourcentage
+        );
+
+    const niveau =
+        obtenirNiveauPerformance(
+            performance
+        );
+
+    element.classList.add(
+        "niveau-" + niveau
+    );
+
+    return niveau;
+}
+
+
+/* ==========================================================
+   RECORDS
+========================================================== */
+
+function mettreAJourRecords() {
+
+    listeRecords.innerHTML = "";
+
+    const recordsDuree =
+        records[dureeActuelle];
+
+    for (
+        const taille
+        of POURCENTAGES_TAILLE
+    ) {
+
+        const record =
+            recordsDuree[taille];
+
+        const ligne =
+            document.createElement("div");
+
+        ligne.className =
+            "record-ligne";
+
+
+        const info =
+            document.createElement("div");
+
+        info.className =
+            "record-info";
+
+        info.textContent =
+            NOMS_DUREES[dureeActuelle]
+            + " — point "
+            + taille
+            + "%";
+
+
+        const scoreAffichage =
+            document.createElement("div");
+
+        scoreAffichage.className =
+            "record-score";
+
+        scoreAffichage.textContent =
+            record.score + " clics";
+
+
+        if (record.score > 0) {
+
+            const ratio =
+                document.createElement("span");
+
+            ratio.style.marginLeft =
+                "10px";
+
+            ratio.textContent =
+                "("
+                + record.ratio.toFixed(2)
+                + " clics/s)";
+
+            appliquerCouleur(
+                ratio,
+                record.ratio,
+                taille
+            );
+
+            scoreAffichage.appendChild(
+                ratio
+            );
+        }
+
+
+        ligne.appendChild(info);
+
+        ligne.appendChild(
+            scoreAffichage
+        );
+
+        listeRecords.appendChild(
+            ligne
+        );
+    }
+}
+
+
+/* ==========================================================
+   POSITION DU POINT
+========================================================== */
+
+function placerPoint() {
+
+    const largeur =
+        zoneJeu.clientWidth;
+
+    const hauteur =
+        zoneJeu.clientHeight;
+
+    if (
+        largeur <= 0 ||
+        hauteur <= 0
+    ) {
+        return;
+    }
+
+
+    const marge = 5;
+
+    /*
+        Zone réservée au HUD.
+        Le point ne vient pas se placer
+        sous le compteur.
+    */
+
+    const zoneHaut = 75;
+
+
+    const largeurDisponible =
+        Math.max(
+            1,
+            largeur -
+            diametreActuel -
+            marge * 2
+        );
+
+
+    const hauteurDisponible =
+        Math.max(
+            1,
+            hauteur -
+            zoneHaut -
+            diametreActuel -
+            marge * 2
+        );
+
+
+    const x =
+        marge +
+        Math.random() *
+        largeurDisponible;
+
+
+    const y =
+        zoneHaut +
+        marge +
+        Math.random() *
+        hauteurDisponible;
+
+
+    point.style.width =
+        diametreActuel + "px";
+
+    point.style.height =
+        diametreActuel + "px";
+
+    point.style.left =
+        Math.round(x) + "px";
+
+    point.style.top =
+        Math.round(y) + "px";
+}
+
+
+/* ==========================================================
+   TIMER
+========================================================== */
+
+function arreterTimer() {
+
+    if (animationTimer !== null) {
+
+        cancelAnimationFrame(
+            animationTimer
+        );
+
+        animationTimer = null;
+    }
+}
+
+
+function mettreAJourPartie() {
+
+    if (!partieEnCours) {
+
+        animationTimer = null;
+
+        return;
+    }
+
+
+    const tempsEcoule =
+        obtenirTempsEcoule();
+
+
+    const tempsRestant =
+        Math.max(
+            0,
+            dureeActuelle -
+            tempsEcoule
+        );
+
+
+    const ratio =
+        tempsEcoule > 0
+            ? score / tempsEcoule
+            : 0;
+
+
+    timerElement.textContent =
+        tempsRestant.toFixed(1);
+
+
+    scoreElement.textContent =
+        score;
+
+
+    ratioElement.textContent =
+        ratio.toFixed(2);
+
+
+    appliquerCouleur(
+        ratioElement,
+        ratio,
+        pourcentageActuel
+    );
+
+
+    if (
+        tempsEcoule >=
+        dureeActuelle
+    ) {
+
+        terminerJeu();
+
+        return;
+    }
+
+
+    animationTimer =
+        requestAnimationFrame(
+            mettreAJourPartie
+        );
+}
+
+
+/* ==========================================================
+   DEMARRER
+========================================================== */
+
+function demarrerJeu() {
+
+    if (partieEnCours) {
+        return;
+    }
+
+
+    dureeActuelle =
+        Number(dureeSelect.value);
+
+
+    pourcentageActuel =
+        obtenirPourcentageTaille();
+
+
+    diametreActuel =
+        calculerDiametre(
+            pourcentageActuel
+        );
+
+
+    score = 0;
+
+    partieEnCours = true;
+
+
+    arreterTimer();
+
+
+    menu.style.display =
+        "none";
+
+    jeu.style.display =
+        "block";
+
+    finElement.style.display =
+        "none";
+
+
+    scoreElement.textContent =
+        "0";
+
+
+    timerElement.textContent =
+        dureeActuelle.toFixed(1);
+
+
+    ratioElement.textContent =
+        "0.00";
+
+
+    appliquerCouleur(
+        ratioElement,
+        0,
+        pourcentageActuel
+    );
+
+
+    /*
+        On attend que le navigateur ait
+        réellement affiché la zone avant
+        de calculer ses dimensions.
+    */
+
+    requestAnimationFrame(
+        function() {
+
+            if (!partieEnCours) {
+                return;
+            }
+
+            placerPoint();
+
+            point.style.display =
+                "block";
+
+            tempsDepart =
+                performance.now();
+
+            animationTimer =
+                requestAnimationFrame(
+                    mettreAJourPartie
+                );
+        }
+    );
+}
+
+
+/* ==========================================================
+   CLIC SUR LE POINT
+========================================================== */
+
+function gererClicPoint(event) {
+
+    event.stopPropagation();
+
+
+    if (!partieEnCours) {
+        return;
+    }
+
+
+    /*
+        Sécurité :
+        un clic arrivé exactement au moment
+        où la partie se termine ne compte pas.
+    */
+
+    if (
+        obtenirTempsEcoule() >=
+        dureeActuelle
+    ) {
+
+        terminerJeu();
+
+        return;
+    }
+
+
+    score++;
+
+    scoreElement.textContent =
+        score;
+
+
+    placerPoint();
+}
+
+
+point.addEventListener(
+    "click",
+    gererClicPoint
+);
+
+
+/* ==========================================================
+   FIN DE PARTIE
+========================================================== */
+
+function terminerJeu() {
+
+    if (!partieEnCours) {
+        return;
+    }
+
+
+    partieEnCours = false;
+
+    arreterTimer();
+
+
+    const ratio =
+        score / dureeActuelle;
+
+
+    const record =
+        records[dureeActuelle]
+               [pourcentageActuel];
+
+
+    /*
+        Les records sont comparés sur
+        le score brut, comme auparavant.
+    */
+
+    if (
+        score > record.score
+    ) {
+
+        record.score =
+            score;
+
+        record.ratio =
+            ratio;
+    }
+
+
+    scoreFinalElement.textContent =
+        score;
+
+
+    ratioFinalElement.textContent =
+        ratio.toFixed(2);
+
+
+    dureeFinalElement.textContent =
+        NOMS_DUREES[dureeActuelle];
+
+
+    tailleFinalElement.textContent =
+        pourcentageActuel + "%";
+
+
+    const niveau =
+        appliquerCouleur(
+            ratioFinalElement,
+            ratio,
+            pourcentageActuel
+        );
+
+
+    for (let i = 1; i <= 7; i++) {
+
+        niveauFinalElement.classList.remove(
+            "niveau-" + i
+        );
+    }
+
+
+    niveauFinalElement.classList.add(
+        "niveau-" + niveau
+    );
+
+
+    niveauFinalElement.textContent =
+        NOMS_NIVEAUX[niveau];
+
+
+    timerElement.textContent =
+        "0.0";
+
+
+    finElement.style.display =
+        "flex";
+
+
+    mettreAJourRecords();
+}
+
+
+/* ==========================================================
+   RETOUR MENU
+========================================================== */
+
+function retourMenu() {
+
+    partieEnCours = false;
+
+    arreterTimer();
+
+
+    point.style.display =
+        "none";
+
+
+    jeu.style.display =
+        "none";
+
+
+    menu.style.display =
+        "flex";
+
+
+    finElement.style.display =
+        "none";
+
+
+    mettreAJourRecords();
+}
+
+
+/* ==========================================================
+   PLEIN ECRAN
+========================================================== */
+
+async function basculerPleinEcran() {
+
+    try {
+
+        if (!document.fullscreenElement) {
+
+            await zoneJeu.requestFullscreen();
+
+        } else {
+
+            await document.exitFullscreen();
+        }
+
+    } catch (erreur) {
+
+        console.warn(
+            "Le plein écran n'a pas pu être activé.",
+            erreur
+        );
+    }
+}
+
+
+/* ==========================================================
+   EVENEMENTS
+========================================================== */
+
+tailleSlider.addEventListener(
+    "input",
+    mettreAJourTaille
+);
+
+
+dureeSelect.addEventListener(
+    "change",
+    function() {
+
+        dureeActuelle =
+            Number(dureeSelect.value);
+
+        mettreAJourRecords();
+    }
+);
+
+
+boutonStart.addEventListener(
+    "click",
+    demarrerJeu
+);
+
+
+boutonMenu.addEventListener(
+    "click",
+    retourMenu
+);
+
+
+/*
+    Double-clic :
+    plein écran.
+*/
+
+zoneJeu.addEventListener(
+    "dblclick",
+    function(event) {
+
+        event.preventDefault();
+
+        basculerPleinEcran();
+    }
+);
+
+
+/*
+    Redimensionnement :
+    on repositionne le point pour
+    éviter qu'il sorte de l'écran.
+*/
+
+window.addEventListener(
+    "resize",
+    function() {
+
+        if (partieEnCours) {
+
+            requestAnimationFrame(
+                placerPoint
+            );
+        }
+    }
+);
+
+
+/*
+    Si le navigateur quitte le plein écran
+    avec Échap, la partie continue normalement.
+*/
+
+document.addEventListener(
+    "fullscreenchange",
+    function() {
+
+        if (partieEnCours) {
+
+            requestAnimationFrame(
+                placerPoint
+            );
+        }
+    }
+);
+
+
+/* ==========================================================
+   INITIALISATION
+========================================================== */
+
+initialiserRecords();
+
+mettreAJourTaille();
+
+mettreAJourRecords();
+
+point.style.display =
+    "block";
+
+</script>
+
+</body>
+</html>
+
